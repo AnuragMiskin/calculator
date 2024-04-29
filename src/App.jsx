@@ -21,6 +21,13 @@ function reducer(state,{type,payload}){
       if(payload.digit==="." && state.currentoperand.includes(".")){
         return state;
       }
+      if(state.overwrite){
+        return{
+          ...state,
+          currentoperand:payload.digit,
+          overwrite:false,
+        }
+      }
       return{
         ...state,
         currentoperand:`${state.currentoperand || ""}${payload.digit}`
@@ -53,7 +60,38 @@ function reducer(state,{type,payload}){
         currentoperand:null,
       }
     }
-
+    case ACTIONS.EVALUATE:{
+      if(state.operation==null || state.previousoperand==null || state.currentoperand==null){
+        return state
+      }
+      return{
+        ...state,
+        overwrite:true,
+        previousoperand:null,
+        operation:null,
+        currentoperand:evaluate(state)
+      }
+    }
+    case ACTIONS.DELETE_DIGIT:{
+      if(state.overwrite){
+        return{
+          ...state,
+          overwrite:false,
+          currentoperand:null,
+        }
+      }
+      if(state.currentoperand==null) return state
+      if(state.currentoperand.length===1){
+        return{
+          ...state,
+          currentoperand:null
+        }
+      }
+      return{
+        ...state,
+        currentoperand:state.currentoperand.slice(0,-1),
+      }
+    }
   }
 
 }
@@ -88,7 +126,7 @@ function App(){
       <div className="current-operand">{currentoperand}</div>
     </div>
     <button className="span-two" onClick={()=>dispatch({type:ACTIONS.CLEAR})}>AC</button>
-    <button>DEL</button>
+    <button onClick={()=>dispatch({type:ACTIONS.DELETE_DIGIT})}>DEL</button>
     <OperationButton operation="%" dispatch={dispatch}/>
     <DigitButton digit="1" dispatch={dispatch}/> 
     <DigitButton digit="2" dispatch={dispatch}/>     
@@ -104,7 +142,7 @@ function App(){
     <OperationButton operation="-" dispatch={dispatch}/>
     <DigitButton digit="." dispatch={dispatch}/>
     <DigitButton digit="0" dispatch={dispatch}/> 
-    <button className="span-two">=</button>
+    <button className="span-two" onClick={()=>dispatch({type:ACTIONS.EVALUATE})}>=</button>
   </div>
   )
 }
