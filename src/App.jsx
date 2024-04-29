@@ -1,6 +1,7 @@
 import { useReducer } from "react"
-import { DigitButton } from "./DigitButton";
-import { OperationButton } from "./OperationButton";
+import DigitButton from "./DigitButton"
+import OperationButton from "./OperationButton"
+
 import "./styles.css"
 
 export const ACTIONS={
@@ -14,11 +15,20 @@ export const ACTIONS={
 function reducer(state,{type,payload}){
   switch(type){
     case ACTIONS.ADD_DIGIT:
+      if(payload.digit==="0" && state.currentoperand==="0"){
+        return state;
+      }
+      if(payload.digit==="." && state.currentoperand.includes(".")){
+        return state;
+      }
       return{
         ...state,
         currentoperand:`${state.currentoperand || ""}${payload.digit}`
       }
+    case ACTIONS.CLEAR:
+      return {}
   }
+
 }
 
 function App(){
@@ -29,7 +39,7 @@ function App(){
       <div className="previous-operand">{previousoperand} {operation}</div>
       <div className="current-operand">{currentoperand}</div>
     </div>
-    <button className="span-two">AC</button>
+    <button className="span-two" onClick={()=>dispatch({type:ACTIONS.CLEAR})}>AC</button>
     <button>DEL</button>
     <OperationButton operation="%" dispatch={dispatch}/>
     <DigitButton digit="1" dispatch={dispatch}/> 
@@ -44,7 +54,7 @@ function App(){
     <DigitButton digit="8" dispatch={dispatch}/> 
     <DigitButton digit="9" dispatch={dispatch}/>     
     <OperationButton operation="-" dispatch={dispatch}/>
-    <OperationButton operation="." dispatch={dispatch}/>
+    <DigitButton digit="." dispatch={dispatch}/>
     <DigitButton digit="0" dispatch={dispatch}/> 
     <button className="span-two">=</button>
   </div>
