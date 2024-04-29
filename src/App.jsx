@@ -40,6 +40,12 @@ function reducer(state,{type,payload}){
           currentoperand:null
         }
       }
+      if(state.currentoperand==null){
+        return{
+          ...state,
+          operation:payload.operation,
+        }
+      }
       return{
         ...state,
         previousoperand:evaluate(state),
