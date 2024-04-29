@@ -27,9 +27,51 @@ function reducer(state,{type,payload}){
       }
     case ACTIONS.CLEAR:
       return {}
+
+    case ACTIONS.CHOOSE_OPERATION:{
+      if(state.previousoperand == null && state.currentoperand == null){
+        return state
+      }
+      if(state.previousoperand == null){
+        return{
+          ...state,
+          operation:payload.operation,
+          previousoperand:state.currentoperand,
+          currentoperand:null
+        }
+      }
+      return{
+        ...state,
+        previousoperand:evaluate(state),
+        operation:payload.operation,
+        currentoperand:null,
+      }
+    }
+
   }
 
 }
+function evaluate({previousoperand,currentoperand,operation}){
+    const prev=parseFloat(previousoperand)
+    const current=parseFloat(currentoperand)
+    let computation=""
+    if(isNaN(prev) || isNaN(current)) return ""
+    switch(operation){
+      case "+":
+        computation=prev+current
+        break
+      case "-":
+        computation=prev-current
+        break
+      case "*":
+        computation=prev*current
+        break
+      case "%":
+        computation=prev/current
+        break
+      }
+      return computation.toString()
+    }
 
 function App(){
   const [{currentoperand,previousoperand,operation},dispatch]=useReducer(reducer,{})
