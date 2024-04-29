@@ -95,6 +95,15 @@ function reducer(state,{type,payload}){
   }
 
 }
+
+const INT_formatter=new Intl.NumberFormat("en-us",{maximumFractionDigits:0})
+function formatoperand(operand){
+  if(operand==null)return
+  const[integer,decimal]=operand.split(".")
+  if(decimal==null) return INT_formatter.format(integer)
+  return `${INT_formatter.format(integer)}.${INT_formatter.format(integer)}`
+}
+ 
 function evaluate({previousoperand,currentoperand,operation}){
     const prev=parseFloat(previousoperand)
     const current=parseFloat(currentoperand)
@@ -110,7 +119,7 @@ function evaluate({previousoperand,currentoperand,operation}){
       case "*":
         computation=prev*current
         break
-      case "%":
+      case "÷":
         computation=prev/current
         break
       }
@@ -122,12 +131,12 @@ function App(){
   return (
   <div className="calculator-grid">
     <div className="output">
-      <div className="previous-operand">{previousoperand} {operation}</div>
-      <div className="current-operand">{currentoperand}</div>
+      <div className="previous-operand">{formatoperand(previousoperand)} {operation}</div>
+      <div className="current-operand">{formatoperand(currentoperand)}</div>
     </div>
     <button className="span-two" onClick={()=>dispatch({type:ACTIONS.CLEAR})}>AC</button>
     <button onClick={()=>dispatch({type:ACTIONS.DELETE_DIGIT})}>DEL</button>
-    <OperationButton operation="%" dispatch={dispatch}/>
+    <OperationButton operation="÷" dispatch={dispatch}/>
     <DigitButton digit="1" dispatch={dispatch}/> 
     <DigitButton digit="2" dispatch={dispatch}/>     
     <DigitButton digit="3" dispatch={dispatch}/> 
